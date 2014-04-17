@@ -1,9 +1,55 @@
 require 'rubyXL'
+require 'benchmark'
 
 workbook = RubyXL::Parser.parse("../data/これはテスト＿20140417.xlsx")
 workbook.worksheets.each_with_index do |worksheet, index|
   p "シート名#{index}:#{worksheet.sheet_name}"
 end
+
+p "--------------------"
+
+worksheet1 = workbook[0]
+
+puts Benchmark::CAPTION
+puts Benchmark.measure{
+
+  col = 0
+  (0..2499).each do |row|
+    p "cell(#{row}, #{col}):#{worksheet1[row][col].value}"
+  end
+}
+
+p "--------------------"
+
+worksheet1 = workbook[0]
+
+puts Benchmark::CAPTION
+puts Benchmark.measure{
+
+  col = 1
+  val = 0
+  (0..2499).each do |row|
+    val += worksheet1[row][col].value
+  end
+
+  p "sum(1〜2500) = #{val}"
+}
+
+p "--------------------"
+
+worksheet2 = workbook[1]
+
+puts Benchmark::CAPTION
+puts Benchmark.measure{
+  (0..49).each do |row|
+    (0..51).each do |col|
+      worksheet2[row][col].value
+      # p "cell(#{row}, #{col}):#{worksheet2[row][col].value}"
+    end
+  end
+}
+
+p "--------------------"
 
 # シート3を取得
 worksheet3 = workbook[2]
@@ -47,3 +93,5 @@ row += 1
 
 # 関数の値
 p "C2:#{worksheet3[row][col].value}"  #=> 10:59
+
+
